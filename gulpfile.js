@@ -1,3 +1,5 @@
+var del = require('del');
+
 var gulp = require('gulp');
 var utilities = require('gulp-util');
 
@@ -42,8 +44,13 @@ gulp.task('concatInterface', function() {
     .pipe(gulp.dest('./tmp'));
 });
 
+//clean task
+gulp.task("clean", function(){
+  return del(['build', 'tmp']);
+});
+
 //build tasks
-gulp.task("build", function(){
+gulp.task("build", ['clean'], function(){
   if (buildProduction) {
     gulp.start('minifyScripts');
   } else {
