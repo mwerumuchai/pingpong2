@@ -1,4 +1,5 @@
 var gulp = require('gulp');
+var utilities = require('gulp-util');
 
 /*gulp.task('myTask', function() {
   console.log('hello gulp');
@@ -11,6 +12,8 @@ var source = require('vinyl-source-stream');
 
 var uglify = require('gulp-uglify');
 
+var buildProduction = utilities.env.production;
+
 
 //browserify
 gulp.task('jsBrowserify', ['concatInterface'], function() {
@@ -19,7 +22,7 @@ gulp.task('jsBrowserify', ['concatInterface'], function() {
     .pipe(source('app.js'))
     .pipe(gulp.dest('./build/js'));
 });
- 
+
 gulp.task("minifyScripts", ["jsBrowserify"], function(){
   return gulp.src("./build/js/app.js")
     .pipe(uglify())
@@ -37,4 +40,13 @@ gulp.task('concatInterface', function() {
   return gulp.src(['./js/pingpong-interface.js', './js/signup-interface.js'])
     .pipe(concat('allConcat.js'))
     .pipe(gulp.dest('./tmp'));
+});
+
+//build tasks
+gulp.task("build", function(){
+  if (buildProduction) {
+    gulp.start('minifyScripts');
+  } else {
+    gulp.start('jsBrowserify');
+  }
 });
