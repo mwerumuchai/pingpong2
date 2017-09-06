@@ -1,0 +1,21 @@
+{
+  "name": "pingpong",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "mwerumuchai <mwerumuchai@gmail.com>"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/mwerumuchai/pingpong2",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^3.2.1"
+  }
+}
