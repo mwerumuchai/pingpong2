@@ -23,6 +23,16 @@ Calculator.prototype.pingPong = function(goal) {
 exports.calculatorModule = Calculator;
 
 },{}],3:[function(require,module,exports){
+function Weather(){
+}
+
+Weather.prototype.getWeather = function() {
+  console.log("Hi! I'm a weather object.");
+}
+
+exports.weatherModule = Weather;
+
+},{}],4:[function(require,module,exports){
 var Calculator = require('./../js/pingpong.js').calculatorModule;
 
 $(document).ready(function() {
@@ -52,6 +62,7 @@ $(document).ready(function(){
 
 var apiKey = "dc65db5802e508eea01bd88137a5a9e1";
 var apiKey = require('./../.env').apiKey;
+var Weather = require('./../js/weather.js').weatherModule;
 
 $(document).ready(function() {
   $('#weatherLocation').click(function() {
@@ -74,4 +85,9 @@ $(document).ready(function() {
 //uses then() method which accpets a functionthat will be invoked when the promise has been fulfilled
 //.fail() method is called when a promise enters the rejected state. An object representing the erroris passed into the fail method if it is called
 
-},{"./../.env":1,"./../js/pingpong.js":2}]},{},[3]);
+$(document).ready(function() {
+  var currentWeatherObject = new Weather();
+  currentWeatherObject.getWeather();
+});
+
+},{"./../.env":1,"./../js/pingpong.js":2,"./../js/weather.js":3}]},{},[4]);
