@@ -30,6 +30,8 @@ var lib = require('bower-files')({
 });
 
 var browserSync = require('browser-sync').create();
+var sass = require('gulp-sass');
+var sourcemaps = require('gulp-sourcemaps');
 
 
 //linting tasks
@@ -85,6 +87,7 @@ gulp.task('build', ['clean'], function(){
     gulp.start('jsBrowserify');
   }
   gulp.start('bower');
+  gulp.start('cssBuild');
 });
 
 //Adding css files
@@ -130,3 +133,15 @@ gulp.task('serve', function() {
 gulp.task('htmlBuild', function() {
   browserSync.reload();
 });
+
+//cssBuild and sass
+gulp.task('cssBuild', function() {
+  return gulp.src(['scss/*.scss'])
+    .pipe(sourcemaps.init())
+    .pipe(sass())
+    .pipe(sourcemaps.write())
+    .pipe(gulp.dest('./build/css'))
+    .pipe(browserSync.stream());
+});
+
+gulp.watch(["scss/*.scss"], ['cssBuild']);
