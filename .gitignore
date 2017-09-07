@@ -1,1 +1,7 @@
 ignore these files
+node_modules/
+.DS_store
+bower_components/
+build/
+tmp/
+.env
