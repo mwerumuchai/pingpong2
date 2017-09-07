@@ -1,21 +1,12 @@
-var del = require('del');
-
 var gulp = require('gulp');
-var utilities = require('gulp-util');
-
-/*gulp.task('myTask', function() {
-  console.log('hello gulp');
-});*/
-
-var concat = require('gulp-concat');
-
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
-
+var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
-
-var buildProduction = utilities.env.production;
+var utilities = require('gulp-util');
+var del = require('del');
 var jshint = require('gulp-jshint');
+var buildProduction = utilities.env.production;
 
 var lib = require('bower-files')({
   "overrides":{
@@ -28,6 +19,10 @@ var lib = require('bower-files')({
     }
   }
 });
+
+/*gulp.task('myTask', function() {
+  console.log('hello gulp');
+});*/
 
 var browserSync = require('browser-sync').create();
 var sass = require('gulp-sass');
@@ -71,6 +66,12 @@ gulp.task('bowerJS', function () {
     .pipe(uglify())
     .pipe(gulp.dest('./build/js'));
 });
+//Adding css files
+gulp.task('bowerCSS', function () {
+  return gulp.src(lib.ext('css').files)
+    .pipe(concat('vendor.css'))
+    .pipe(gulp.dest('./build/css'));
+});
 
 gulp.task('bower', ['bowerJS', 'bowerCSS']);
 
@@ -90,12 +91,7 @@ gulp.task('build', ['clean'], function(){
   gulp.start('cssBuild');
 });
 
-//Adding css files
-gulp.task('bowerCSS', function () {
-  return gulp.src(lib.ext('css').files)
-    .pipe(concat('vendor.css'))
-    .pipe(gulp.dest('./build/css'));
-});//browserSync to create our server
+//browserSync to create our server
 gulp.task('serve', function() {
   browserSync.init({
     server: {
@@ -105,6 +101,8 @@ gulp.task('serve', function() {
   });
   gulp.watch(['js/*.js'], ['jsBuild']); //watch all the files inside of our developlment js folder
   gulp.watch(['bower.json'], ['bowerBuild']);
+  gulp.watch(['*.html'], ['htmlBuild']);
+  gulp.watch(["scss/*.scss"], ['cssBuild']);
 });
 
 gulp.task('jsBuild', ['jsBrowserify', 'jshint'], function(){
@@ -115,7 +113,21 @@ gulp.task('bowerBuild', ['bower'], function(){
   browserSync.reload();
 });
 
-//weather:gulp tasks
+//htmlBuild Task
+gulp.task('htmlBuild', function() {
+  browserSync.reload();
+});
+
+gulp.task('cssBuild', function() {
+  return gulp.src(['scss/*.scss'])
+    .pipe(sourcemaps.init())
+    .pipe(sass())
+    .pipe(sourcemaps.write())
+    .pipe(gulp.dest('./build/css'))
+    .pipe(browserSync.stream());
+});
+
+/*//weather:gulp tasks
 gulp.task('serve', function() {
   browserSync.init({
     server: {
@@ -127,21 +139,8 @@ gulp.task('serve', function() {
   gulp.watch(['js/*.js'], ['jsBuild']);
   gulp.watch(['bower.json'], ['bowerBuild']);
   gulp.watch(['*.html'], ['htmlBuild']);
-});
+});*/
 
-//htmlBuild Task
-gulp.task('htmlBuild', function() {
-  browserSync.reload();
-});
+
 
 //cssBuild and sass
-gulp.task('cssBuild', function() {
-  return gulp.src(['scss/*.scss'])
-    .pipe(sourcemaps.init())
-    .pipe(sass())
-    .pipe(sourcemaps.write())
-    .pipe(gulp.dest('./build/css'))
-    .pipe(browserSync.stream());
-});
-
-gulp.watch(["scss/*.scss"], ['cssBuild']);
