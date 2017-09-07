@@ -31,6 +31,23 @@ var lib = require('bower-files')({
 
 var browserSync = require('browser-sync').create();
 
+
+//linting tasks
+gulp.task('jshint', function(){
+  return gulp.src(['js/*.js'])
+    .pipe(jshint())
+    .pipe(jshint.reporter('default'));
+});
+
+
+//gulp-concat to consolidate multiple files .. concatenation: process of consolidating multiple js files into one
+gulp.task('concatInterface', function() {
+  return gulp.src(['./js/*-interface.js'])
+    .pipe(concat('allConcat.js'))
+    .pipe(gulp.dest('./tmp'));
+});
+
+
 //browserify
 gulp.task('jsBrowserify', ['concatInterface'], function() {
   return browserify({ entries: ['./tmp/allConcat.js'] })
@@ -45,40 +62,6 @@ gulp.task("minifyScripts", ["jsBrowserify"], function(){
     .pipe(gulp.dest("./build/js"));
 });
 
-//gulp-concat to consolidate multiple files .. concatenation: process of consolidating multiple js files into one
-gulp.task('concatInterface', function() {
-  return gulp.src(['./js/*-interface.js'])
-    .pipe(concat('allConcat.js'))
-    .pipe(gulp.dest('./tmp'));
-});
-
-gulp.task('concatInterface', function() {
-  return gulp.src(['./js/pingpong-interface.js', './js/signup-interface.js'])
-    .pipe(concat('allConcat.js'))
-    .pipe(gulp.dest('./tmp'));
-});
-
-//clean task
-gulp.task("clean", function(){
-  return del(['build', 'tmp']);
-});
-
-//build tasks
-gulp.task("build", ['clean'], function(){
-  if (buildProduction) {
-    gulp.start('minifyScripts');
-  } else {
-    gulp.start('jsBrowserify');
-  }
-});
-
-//linting tasks
-gulp.task('jshint', function(){
-  return gulp.src(['js/*.js'])
-    .pipe(jshint())
-    .pipe(jshint.reporter('default'));
-});
-
 //using bower packages in the gulpfile
 gulp.task('bowerJS', function () {
   return gulp.src(lib.ext('js').files)
@@ -87,15 +70,14 @@ gulp.task('bowerJS', function () {
     .pipe(gulp.dest('./build/js'));
 });
 
-//Adding css files
-gulp.task('bowerCSS', function () {
-  return gulp.src(lib.ext('css').files)
-    .pipe(concat('vendor.css'))
-    .pipe(gulp.dest('./build/css'));
-});
-
 gulp.task('bower', ['bowerJS', 'bowerCSS']);
 
+//clean task
+gulp.task("clean", function(){
+  return del(['build', 'tmp']);
+});
+
+//build tasks
 gulp.task('build', ['clean'], function(){
   if (buildProduction) {
     gulp.start('minifyScripts');
@@ -105,7 +87,12 @@ gulp.task('build', ['clean'], function(){
   gulp.start('bower');
 });
 
-//browserSync to create our server
+//Adding css files
+gulp.task('bowerCSS', function () {
+  return gulp.src(lib.ext('css').files)
+    .pipe(concat('vendor.css'))
+    .pipe(gulp.dest('./build/css'));
+});//browserSync to create our server
 gulp.task('serve', function() {
   browserSync.init({
     server: {
@@ -122,5 +109,24 @@ gulp.task('jsBuild', ['jsBrowserify', 'jshint'], function(){
 });
 
 gulp.task('bowerBuild', ['bower'], function(){
+  browserSync.reload();
+});
+
+//weather:gulp tasks
+gulp.task('serve', function() {
+  browserSync.init({
+    server: {
+      baseDir: "./",
+      index: "index.html"
+    }
+  });
+
+  gulp.watch(['js/*.js'], ['jsBuild']);
+  gulp.watch(['bower.json'], ['bowerBuild']);
+  gulp.watch(['*.html'], ['htmlBuild']);
+});
+
+//htmlBuild Task
+gulp.task('htmlBuild', function() {
   browserSync.reload();
 });
